@@ -27,4 +27,6 @@ interface NonceRepositoryInterface
     public function find(string $value): ?NonceInterface;
 
     public function save(NonceInterface $nonce): void;
+
+    public function invalidate(NonceInterface $nonce): void;
 }

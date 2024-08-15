@@ -113,6 +113,11 @@ $nonceRepository = new class implements NonceRepositoryInterface
     {
         // TODO: Implement save() method to save a nonce (cache, database, etc)
     }
+
+    public function invalidate(NonceInterface $nonce) : void
+    {
+        // TODO: Implement invalidate() method to expire, delete, or otherwise invalidate a nonce
+    }
 };
 ```
 **Note**: the ready to use [NonceRepository](../../src/Security/Nonce/NonceRepository.php) works with a [PSR6 cache](https://www.php-fig.org/psr/psr-6/#cacheitempoolinterface).

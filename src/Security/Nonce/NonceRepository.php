@@ -58,4 +58,16 @@ class NonceRepository implements NonceRepositoryInterface
             $item->set($nonce->getValue())->expiresAt($nonce->getExpiredAt())
         );
     }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function invalidate(NonceInterface $nonce): void
+    {
+        $item = $this->cache->getItem(sprintf('%s-%s', self::CACHE_PREFIX, $nonce->getValue()));
+
+        $this->cache->save(
+            $item->set($nonce->getValue())->expiresAfter(0)
+        );
+    }
 }

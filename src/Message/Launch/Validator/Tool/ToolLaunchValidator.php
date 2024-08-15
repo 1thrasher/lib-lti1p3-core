@@ -219,19 +219,17 @@ class ToolLaunchValidator extends AbstractLaunchValidator implements ToolLaunchV
             throw new LtiException('ID token nonce claim is missing');
         }
 
-        $nonceValue = $payload->getMandatoryClaim(MessagePayloadInterface::CLAIM_NONCE);
+        $nonceValue = $payload->getMandatoryClaim(LtiMessagePayloadInterface::CLAIM_NONCE);
 
         $nonce = $this->nonceRepository->find($nonceValue);
 
-        if (null !== $nonce) {
-            if (!$nonce->isExpired()) {
-                throw new LtiException('ID token nonce claim already used');
-            }
-        } else {
-            $this->nonceRepository->save(
-                new Nonce($nonceValue, Carbon::now()->addSeconds(NonceGeneratorInterface::TTL))
-            );
+        // If nonce is not found or is expired, it's an invalid request or possibly a replay attack
+        if ($nonce === null || $nonce->isExpired()) {
+            throw new LtiException('ID token nonce claim is invalid or expired');
         }
+
+        // Invalidate the nonce immediately after validation to prevent reuse
+        $this->nonceRepository->invalidate($nonce);
 
         $this->addSuccess('ID token nonce claim is valid');
 
